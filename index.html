@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atlas Dice Dominion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;800&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <div id="setup-overlay" class="overlay">
+    <div class="setup-card">
+      <div class="setup-header">
+        <p class="kicker">Pass-and-play strategy</p>
+        <h1>Atlas Dice Dominion</h1>
+        <p class="subtitle">Choose the number of countries and rounds. Every action is decided by a roll.</p>
+        <p id="setup-status" class="setup-status">Loading map data...</p>
+      </div>
+      <div class="setup-grid">
+        <label class="field">
+          <span>Countries Playing</span>
+          <input id="player-count" type="number" min="2" max="8" value="4" />
+        </label>
+        <label class="field">
+          <span>Rounds</span>
+          <input id="round-count" type="number" min="5" max="200" value="30" />
+        </label>
+      </div>
+      <div id="player-names" class="player-names"></div>
+      <button id="start-game" class="primary">Start Game</button>
+    </div>
+  </div>
+
+  <div id="pass-overlay" class="overlay hidden">
+    <div class="pass-card">
+      <p>Pass the screen to</p>
+      <h2 id="next-player-name">Next Country</h2>
+      <button id="next-player-btn" class="primary">Ready</button>
+    </div>
+  </div>
+
+  <header class="topbar">
+    <div>
+      <p class="kicker">Local Strategy Sandbox</p>
+      <h1>Atlas Dice Dominion</h1>
+    </div>
+    <div class="round-info">
+      <div>
+        <span class="label">Round</span>
+        <strong id="round-display">1</strong>
+        <span class="muted">/</span>
+        <span id="round-max">30</span>
+      </div>
+      <div>
+        <span class="label">Active Country</span>
+        <strong id="active-country">-</strong>
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel left-panel">
+      <div class="panel-card">
+        <h2>Command Deck</h2>
+        <div class="action-buttons">
+          <button class="action-btn" data-action="capture">Capture</button>
+          <button class="action-btn" data-action="tank">Produce Tank</button>
+          <button class="action-btn" data-action="ship">Produce Ship</button>
+          <button class="action-btn" data-action="rename">Rename Country</button>
+        </div>
+        <div class="selection">
+          <h3>Selection</h3>
+          <p id="selection-hint">Pick an action to begin.</p>
+          <div class="selection-grid">
+            <div>
+              <span class="label">Origin</span>
+              <div id="origin-display" class="selection-pill">None</div>
+            </div>
+            <div>
+              <span class="label">Target</span>
+              <div id="target-display" class="selection-pill">None</div>
+            </div>
+          </div>
+          <div id="chance-display" class="chance">Chance: --</div>
+        </div>
+        <div class="dice">
+          <div>
+            <span class="label">Dice Result</span>
+            <div id="dice-face" class="dice-face">Ready</div>
+          </div>
+          <button id="roll-btn" class="primary">Roll Dice</button>
+        </div>
+        <div class="log">
+          <h3>Turn Log</h3>
+          <div id="turn-log" class="log-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="map-panel">
+      <div class="map-frame">
+        <svg id="map" viewBox="0 0 1200 620" preserveAspectRatio="xMidYMid meet"></svg>
+        <div class="zoom-controls">
+          <button id="zoom-in">+</button>
+          <button id="zoom-out">-</button>
+          <button id="zoom-reset">Reset</button>
+        </div>
+      </div>
+      <div class="legend">
+        <span class="legend-dot land"></span> Land Province
+        <span class="legend-dot sea"></span> Sea Province
+        <span class="legend-dot neutral"></span> Neutral
+      </div>
+    </section>
+
+    <section class="panel right-panel">
+      <div class="panel-card">
+        <h2>Country Ledger</h2>
+        <div id="scoreboard" class="scoreboard"></div>
+      </div>
+      <div class="panel-card">
+        <h2>Ideology</h2>
+        <p class="muted">Set your current ideology during your turn.</p>
+        <div class="ideology-input">
+          <input id="ideology-input" type="text" placeholder="e.g., Maritime Republic" />
+          <button id="ideology-save">Save</button>
+        </div>
+      </div>
+      <div class="panel-card">
+        <h2>Newspaper</h2>
+        <p class="muted">Publish a short headline for the world.</p>
+        <textarea id="news-input" rows="3" maxlength="200" placeholder="Two short sentences max."></textarea>
+        <button id="news-publish" class="secondary">Publish</button>
+        <div id="news-feed" class="news-feed"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+</body>
+</html>
+
